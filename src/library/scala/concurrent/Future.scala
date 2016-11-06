@@ -533,6 +533,12 @@ trait Future[+T] extends Awaitable[T] {
 
         result
     }
+
+  /** Convert this `Future[T]` to a `Future[Unit]` by discarding the result.
+   *
+   * @note failed futures will remain as is.
+   */
+  def unit: Future[Unit] = flatMap(Future.toUnit)(internalExecutor)
 }
 
 
@@ -555,6 +561,8 @@ object Future {
     classOf[Double]  -> classOf[java.lang.Double],
     classOf[Unit]    -> classOf[scala.runtime.BoxedUnit]
   )
+
+  private[concurrent] val toUnit: Any => Future[Unit] = scala.Function.const(unit)
 
   /** A Future which is never completed.
    */
